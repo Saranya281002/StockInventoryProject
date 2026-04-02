@@ -1,0 +1,78 @@
+<div class="container mt-4">
+  <h2 class="text-center mb-4">Product Inventory</h2>
+<div class="d-flex justify-content-end mb-3">
+    <div class="row mb-3">
+  <div class="col-md-6">
+    <input 
+      type="text" 
+      class="form-control" 
+      placeholder="Search by name"
+      [(ngModel)]="searchText"
+      (input)="filterProducts()"
+    >
+  </div>
+
+  <div class="col-md-6">
+    <select 
+      class="form-control"
+      [(ngModel)]="selectedCategory"
+      (change)="filterProducts()"
+    >
+      <option value="">All Categories</option>
+      <option>Electronics</option>
+      <option>Fashion</option>
+    </select>
+  </div>
+</div>
+  <button class="btn btn-primary" (click)="toggleForm()">
+    Add Product
+  </button>
+</div>
+  <table class="table table-bordered table-striped table-hover shadow">
+    <thead class="table-dark">
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Category</th>
+        <th>Price (₹)</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let product of filteredProducts">
+        <td>{{ product.id }}</td>
+        <td>{{ product.name }}</td>
+        <td>{{ product.category }}</td>
+        <td>{{ product.price }}</td>
+        <td>
+          <button class="btn btn-sm btn-warning me-2" (click)="editProduct(product)">Edit</button>
+          <button class="btn btn-sm btn-danger" (click)="deleteProduct(product.id)">Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div *ngIf="showForm" class="card p-3 mb-3 shadow">
+  <h5>Add New Product</h5>
+
+  <div class="row">
+    <div class="col-md-3">
+      <input type="text" class="form-control" placeholder="Name" [(ngModel)]="newProduct.name">
+    </div>
+
+    <div class="col-md-3">
+      <input type="text" class="form-control" placeholder="Category" [(ngModel)]="newProduct.category">
+    </div>
+
+    <div class="col-md-3">
+      <input type="number" class="form-control" placeholder="Price" [(ngModel)]="newProduct.price">
+    </div>
+
+    <div class="col-md-3">
+      <button class="btn btn-success w-100" (click)="addProduct()">
+  {{ isEditMode ? 'Update' : 'Save' }}
+</button>
+    </div>
+  </div>
+</div>
+</div>
