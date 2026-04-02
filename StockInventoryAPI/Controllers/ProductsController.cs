@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using StockInventoryAPI.Data;
 using StockInventoryAPI.Models;
 
 namespace StockInventoryAPI.Controllers
@@ -7,16 +8,18 @@ namespace StockInventoryAPI.Controllers
     [ApiController]
     public class ProductsController : ControllerBase
     {
-        private static List<Product> products = new List<Product>
+        private readonly AppDbContext _context;
+
+        public ProductsController(AppDbContext context)
         {
-            new Product { Id = 1, Name = "Laptop", Category = "Electronics", Price = 50000 },
-            new Product { Id = 2, Name = "Phone", Category = "Electronics", Price = 20000 }
-        };
+            _context = context;
+        }
 
         // GET all
         [HttpGet]
         public IActionResult GetProducts()
         {
+            var products = _context.Products.ToList();
             return Ok(products);
         }
 
@@ -24,7 +27,7 @@ namespace StockInventoryAPI.Controllers
         [HttpGet("{id}")]
         public IActionResult GetProduct(int id)
         {
-            var product = products.FirstOrDefault(p => p.Id == id);
+            var product = _context.Products.Find(id);
             if (product == null)
                 return NotFound();
 
@@ -35,8 +38,8 @@ namespace StockInventoryAPI.Controllers
         [HttpPost]
         public IActionResult AddProduct(Product product)
         {
-            product.Id = products.Count + 1;
-            products.Add(product);
+            _context.Products.Add(product);
+            _context.SaveChanges();
             return Ok(product);
         }
 
@@ -44,13 +47,15 @@ namespace StockInventoryAPI.Controllers
         [HttpPut("{id}")]
         public IActionResult UpdateProduct(int id, Product updatedProduct)
         {
-            var product = products.FirstOrDefault(p => p.Id == id);
+            var product = _context.Products.Find(id);
             if (product == null)
                 return NotFound();
 
             product.Name = updatedProduct.Name;
             product.Category = updatedProduct.Category;
             product.Price = updatedProduct.Price;
+
+            _context.SaveChanges();
 
             return Ok(product);
         }
@@ -59,11 +64,13 @@ namespace StockInventoryAPI.Controllers
         [HttpDelete("{id}")]
         public IActionResult DeleteProduct(int id)
         {
-            var product = products.FirstOrDefault(p => p.Id == id);
+            var product = _context.Products.Find(id);
             if (product == null)
                 return NotFound();
 
-            products.Remove(product);
+            _context.Products.Remove(product);
+            _context.SaveChanges();
+
             return Ok();
         }
     }

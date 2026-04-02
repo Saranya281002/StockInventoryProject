@@ -44,12 +44,18 @@ if (this.isEditMode && this.editProductId !== null) {
     });
   });
 } else {
-  this.productService.addProduct(this.newProduct).subscribe(() => {
+  this.productService.addProduct(this.newProduct).subscribe({
+  next: () => {
     this.productService.getProducts().subscribe(data => {
       this.products = data;
       this.filterProducts();
     });
-  });
+  },
+  error: (err) => {
+    console.log("ERROR:", err);
+    alert("Something went wrong!");
+  }
+});
 }
   this.newProduct = { name: '', category: '', price: null };
   this.showForm = false;
@@ -65,12 +71,14 @@ editProduct(product: any) {
   this.filterProducts();
 }
 deleteProduct(id: number) {
-  this.productService.deleteProduct(id).subscribe(() => {
-    this.productService.getProducts().subscribe(data => {
-      this.products = data;
-      this.filterProducts();
+  if (confirm("Are you sure you want to delete this product?")) {
+    this.productService.deleteProduct(id).subscribe(() => {
+      this.productService.getProducts().subscribe(data => {
+        this.products = data;
+        this.filterProducts();
+      });
     });
-  });
+  }
 }
 filterProducts() {
   this.filteredProducts = this.products.filter(p => {
