@@ -2,27 +2,38 @@
   <h2 class="text-center mb-4">Product Inventory</h2>
 <div class="d-flex justify-content-end mb-3">
     <div class="row mb-3">
-  <div class="col-md-6">
-    <input 
-      type="text" 
-      class="form-control" 
-      placeholder="Search by name"
-      [(ngModel)]="searchText"
-      (input)="filterProducts()"
-    >
+  <div class="row mb-3 align-items-center">
+
+  <!-- 🔍 Search -->
+  <div class="col-md-5">
+    <input type="text"
+           class="form-control"
+           placeholder="🔍 Search product..."
+           [(ngModel)]="searchText"
+           (input)="filterProducts()">
   </div>
 
-  <div class="col-md-6">
-    <select 
-      class="form-control"
-      [(ngModel)]="selectedCategory"
-      (change)="filterProducts()"
-    >
+  <!-- 📂 Category Dropdown -->
+  <div class="col-md-4">
+    <select class="form-control"
+            [(ngModel)]="selectedCategory"
+            (change)="filterProducts()">
       <option value="">All Categories</option>
-      <option>Electronics</option>
-      <option>Fashion</option>
+      <option *ngFor="let cat of categories" [value]="cat">
+        {{ cat }}
+      </option>
     </select>
   </div>
+
+  <!-- ❌ Clear Filters -->
+  <div class="col-md-3">
+    <button class="btn btn-outline-secondary w-100"
+            (click)="clearFilters()">
+      Clear Filters
+    </button>
+  </div>
+
+</div>
 </div>
   <button class="btn btn-primary" (click)="toggleForm()">
     Add Product
@@ -40,7 +51,7 @@
     </thead>
 
     <tbody>
-      <tr *ngFor="let product of filteredProducts">
+      <tr *ngFor="let product of paginatedProducts">
         <td>{{ product.id }}</td>
         <td>{{ product.name }}</td>
         <td>{{ product.category }}</td>
@@ -52,9 +63,27 @@
       </tr>
     </tbody>
   </table>
+  <div class="d-flex justify-content-center mt-3">
+
+  <button class="btn btn-outline-primary me-2"
+          (click)="prevPage()"
+          [disabled]="currentPage === 1">
+    Previous
+  </button>
+
+  <span class="align-self-center">
+    Page {{ currentPage }}
+  </span>
+
+  <button class="btn btn-outline-primary ms-2"
+          (click)="nextPage()"
+          [disabled]="currentPage * itemsPerPage >= filteredProducts.length">
+    Next
+  </button>
+
+</div>
   <div *ngIf="showForm" class="card p-3 mb-3 shadow">
   <h5>Add New Product</h5>
-
   <div class="row">
     <div class="col-md-3">
 <input type="text" class="form-control" placeholder="Name" [(ngModel)]="newProduct.name" required>
