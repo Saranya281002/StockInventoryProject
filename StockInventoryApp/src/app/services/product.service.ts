@@ -1,28 +1,35 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductService {
 
- apiUrl = 'https://localhost:44359/api/Products';
+ apiUrl = `${environment.apiBaseUrl}/products`;
 
   constructor(private http: HttpClient) { }
-
+getHeaders() {
+  return {
+    headers: {
+      Authorization: 'Bearer ' + localStorage.getItem('token')
+    }
+  };
+}
   getProducts() {
-  return this.http.get<any[]>(this.apiUrl);
+  return this.http.get<any[]>(this.apiUrl, this.getHeaders());
 }
 
   addProduct(product: any) {
-    return this.http.post(this.apiUrl, product);
+    return this.http.post(this.apiUrl, product, this.getHeaders());
   }
 
   updateProduct(id: number, updatedProduct: any) {
-    return this.http.put(`${this.apiUrl}/${id}`, updatedProduct);
+    return this.http.put(`${this.apiUrl}/${id}`, updatedProduct, this.getHeaders());
   }
 
   deleteProduct(id: number) {
-    return this.http.delete(`${this.apiUrl}/${id}`);
+    return this.http.delete(`${this.apiUrl}/${id}`, this.getHeaders());
   }
 }
