@@ -1,45 +1,39 @@
 <div class="container mt-4">
   <h2 class="text-center mb-4">Product Inventory</h2>
-<div class="d-flex justify-content-end mb-3">
+  <div class="d-flex justify-content-end mb-3">
     <div class="row mb-3">
-  <div class="row mb-3 align-items-center">
+      <div class="row mb-3 align-items-center">
 
-  <!-- 🔍 Search -->
-  <div class="col-md-5">
-    <input type="text"
-           class="form-control"
-           placeholder="🔍 Search product..."
-           [(ngModel)]="searchText"
-           (input)="filterProducts()">
-  </div>
+        <!--  Search -->
+        <div class="col-md-5">
+          <input type="text" class="form-control" placeholder=" Search product..." [(ngModel)]="searchText"
+            (input)="filterProducts()">
+        </div>
 
-  <!-- 📂 Category Dropdown -->
-  <div class="col-md-4">
-    <select class="form-control"
-            [(ngModel)]="selectedCategory"
-            (change)="filterProducts()">
-      <option value="">All Categories</option>
-      <option *ngFor="let cat of categories" [value]="cat">
-        {{ cat }}
-      </option>
-    </select>
-  </div>
+        <!-- Category Dropdown -->
+        <div class="col-md-4">
+          <select class="form-control" [(ngModel)]="selectedCategory" (change)="filterProducts()">
+            <option value="">All Categories</option>
+            <option *ngFor="let cat of categories" [value]="cat">
+              {{ cat }}
+            </option>
+          </select>
+        </div>
 
-  <!-- ❌ Clear Filters -->
-  <div class="col-md-3">
-    <button class="btn btn-outline-secondary w-100"
-            (click)="clearFilters()">
-      Clear Filters
+        <!-- Clear Filters -->
+        <div class="col-md-3">
+          <button class="btn btn-outline-secondary w-100" (click)="clearFilters()">
+            Clear Filters
+          </button>
+        </div>
+
+      </div>
+    </div>
+    <button class="btn btn-primary" (click)="toggleForm()">
+      Add Product
     </button>
   </div>
-
-</div>
-</div>
-  <button class="btn btn-primary" (click)="toggleForm()">
-    Add Product
-  </button>
-</div>
-  <table class="table table-bordered table-striped table-hover shadow">
+ <table class="table table-hover table-bordered shadow-sm">
     <thead class="table-dark">
       <tr>
         <th>ID</th>
@@ -47,6 +41,9 @@
         <th>Category</th>
         <th>Price (₹)</th>
         <th>Actions</th>
+        <th>Stock</th>
+        <th>Manage Stock</th>
+        <th>Transaction History</th>
       </tr>
     </thead>
 
@@ -60,48 +57,88 @@
           <button class="btn btn-sm btn-warning me-2" (click)="editProduct(product)">Edit</button>
           <button class="btn btn-sm btn-danger" (click)="deleteProduct(product.id)">Delete</button>
         </td>
+        <td>{{ product.stock }}</td>
+        <td>
+          <button class="btn btn-success btn-sm" (click)="addStock(product.id)">+ Stock</button>
+          <button class="btn btn-danger btn-sm" (click)="removeStock(product.id)">- Stock</button>
+        </td>
+        <td><button class="btn btn-info btn-sm" (click)="viewTransactions(product.id)">History</button></td>
       </tr>
     </tbody>
   </table>
-  <div class="d-flex justify-content-center mt-3">
-
-  <button class="btn btn-outline-primary me-2"
-          (click)="prevPage()"
-          [disabled]="currentPage === 1">
-    Previous
-  </button>
-
-  <span class="align-self-center">
-    Page {{ currentPage }}
-  </span>
-
-  <button class="btn btn-outline-primary ms-2"
-          (click)="nextPage()"
-          [disabled]="currentPage * itemsPerPage >= filteredProducts.length">
-    Next
-  </button>
-
+  <div *ngIf="paginatedProducts.length === 0" class="text-center mt-3 text-muted">
+  No products found
 </div>
-  <div *ngIf="showForm" class="card p-3 mb-3 shadow">
-  <h5>Add New Product</h5>
-  <div class="row">
-    <div class="col-md-3">
-<input type="text" class="form-control" placeholder="Name" [(ngModel)]="newProduct.name" required>
-    </div>
+  <div>
+    <div class="d-flex justify-content-center mt-3">
 
-    <div class="col-md-3">
-      <input type="text" class="form-control" placeholder="Category" [(ngModel)]="newProduct.category" required>
-    </div>
+      <button class="btn btn-outline-primary me-2" (click)="prevPage()" [disabled]="currentPage === 1">
+        Previous
+      </button>
 
-    <div class="col-md-3">
-      <input type="number" class="form-control" placeholder="Price" [(ngModel)]="newProduct.price" min="1" required>
-    </div>
+      <span class="align-self-center">
+        Page {{ currentPage }}
+      </span>
 
-    <div class="col-md-3">
-      <button class="btn btn-success w-100" (click)="addProduct()" [disabled]="!newProduct.name || !newProduct.category || !newProduct.price">
-  {{ isEditMode ? 'Update' : 'Save' }}
-</button>
+      <button class="btn btn-outline-primary ms-2" (click)="nextPage()"
+        [disabled]="currentPage * itemsPerPage >= filteredProducts.length">
+        Next
+      </button>
+    </div>
+    <div *ngIf="selectedTransactions.length > 0" class="mt-4">
+<span *ngIf="selectedProduct && selectedProduct.stock < 5" class="badge bg-danger">
+  Low Stock
+</span>
+      <h5>Transaction History (Product ID: {{ selectedProductId }})</h5>
+
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Quantity</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let t of selectedTransactions">
+            <td>
+              <span [ngClass]="{
+            'text-success': t.type === 'IN',
+            'text-danger': t.type === 'OUT'
+          }">
+                {{ t.type }}
+              </span>
+            </td>
+            <td>{{ t.quantity }}</td>
+            <td>{{ t.date | date:'short' }}</td>
+          </tr>
+        </tbody>
+      </table>
+
     </div>
   </div>
-</div>
+  <div *ngIf="showForm" class="card p-3 mb-3 shadow">
+    <h5>Add New Product</h5>
+    <div class="row">
+      <div class="col-md-3">
+        <input type="text" class="form-control" placeholder="Name" [(ngModel)]="newProduct.name" required>
+      </div>
+
+      <div class="col-md-3">
+        <input type="text" class="form-control" placeholder="Category" [(ngModel)]="newProduct.category" required>
+      </div>
+
+      <div class="col-md-3">
+        <input type="number" class="form-control" placeholder="Price" [(ngModel)]="newProduct.price" min="1" required>
+      </div>
+
+      <div class="col-md-3">
+        <button class="btn btn-success w-100" (click)="addProduct()"
+          [disabled]="!newProduct.name || !newProduct.category || !newProduct.price">
+          {{ isEditMode ? 'Update' : 'Save' }}
+        </button>
+      </div>
+    </div>
+  </div>
 </div>

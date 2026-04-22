@@ -23,7 +23,7 @@ export class LoginComponent {
     }).subscribe({
       next: (res) => {
         localStorage.setItem('token', res.token);
-        this.router.navigate(['/products']);
+        this.router.navigate(['/dashboard']);
       },
       error: () => {
         alert('Invalid credentials');

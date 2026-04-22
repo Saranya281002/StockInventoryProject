@@ -1,0 +1,56 @@
+<div class="container mt-4">
+
+  <h3 class="mb-4">Inventory Dashboard</h3>
+
+  <div class="row">
+
+    <!-- Total Products -->
+    <div class="col-md-4">
+      <div class="card shadow p-3 text-center">
+        <h5>Total Products</h5>
+        <h2 class="text-primary">{{ dashboardData.totalProducts }}</h2>
+      </div>
+    </div>
+
+    <!-- Total Stock -->
+    <div class="col-md-4">
+      <div class="card shadow p-3 text-center">
+        <h5>Total Stock</h5>
+        <h2 class="text-success">{{ dashboardData.totalStock }}</h2>
+      </div>
+    </div>
+
+    <!-- Low Stock -->
+    <div class="col-md-4">
+      <div class="card shadow p-3 text-center">
+        <h5>Low Stock Items</h5>
+        <h2 class="text-danger">{{ dashboardData.lowStock }}</h2>
+      </div>
+    </div>
+
+  </div>
+<div class="row text-center">
+
+  <div class="col-md-4 mb-3">
+    <div class="card shadow-lg border-0 p-3">
+      <h6 class="text-muted">Total Products</h6>
+      <h2 class="text-primary">{{ dashboardData.totalProducts }}</h2>
+    </div>
+  </div>
+
+  <div class="col-md-4 mb-3">
+    <div class="card shadow-lg border-0 p-3">
+      <h6 class="text-muted">Total Stock</h6>
+      <h2 class="text-success">{{ dashboardData.totalStock }}</h2>
+    </div>
+  </div>
+
+  <div class="col-md-4 mb-3">
+    <div class="card shadow-lg border-0 p-3">
+      <h6 class="text-muted">Low Stock</h6>
+      <h2 class="text-danger">{{ dashboardData.lowStock }}</h2>
+    </div>
+  </div>
+
+</div>
+</div>

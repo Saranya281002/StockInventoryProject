@@ -32,4 +32,25 @@ getHeaders() {
   deleteProduct(id: number) {
     return this.http.delete(`${this.apiUrl}/${id}`, this.getHeaders());
   }
+  addStock(data: any) {
+  return this.http.post(`${this.apiUrl}/stock`, data, this.getHeaders());
+}
+removeStock(data: any) {
+  return this.http.post(`${this.apiUrl}/stock/remove`, data, this.getHeaders());
+}
+getAllStock() {
+  return this.http.get<any[]>(`${this.apiUrl}/stock/all`, this.getHeaders());
+}
+getTransactions(productId: number) {
+  return this.http.get<any[]>(
+    `${this.apiUrl}/${productId}/transactions`,
+    this.getHeaders()
+  );
+}
+viewTransactions(productId: number) {
+  return this.http.get<any[]>(`${this.apiUrl}/${productId}/transactions`, this.getHeaders());
+}
+getDashboard() {
+  return this.http.get<any>(`${this.apiUrl}/dashboard`, this.getHeaders());
+}
 }

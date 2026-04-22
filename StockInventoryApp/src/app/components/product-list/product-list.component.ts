@@ -11,13 +11,17 @@ constructor(private productService: ProductService) {}
 products: any[] = [];
 filteredProducts: any[] = [];
 ngOnInit() {
-  this.productService.getProducts().subscribe(data => {
-    this.products = data;
-    this.filteredProducts = data;
-
-    this.categories = [...new Set(data.map(p => p.category))];
-
-    this.updatePagination();
+  this.productService.getProducts().subscribe(products => {
+    this.products = products;
+    this.productService.getAllStock().subscribe(stockData => {
+      this.products.forEach(p => {
+        const stockItem = stockData.find(s => s.productId === p.id);
+        p.stock = stockItem ? stockItem.stock : 0;
+      });
+      this.filteredProducts = this.products;
+      this.categories = [...new Set(products.map(p => p.category))];
+      this.updatePagination();
+    });
   });
 }
 
@@ -30,6 +34,9 @@ categories: string[] = [];
 currentPage: number = 1;
 itemsPerPage: number = 5;
 paginatedProducts: any[] = [];
+selectedTransactions: any[] = [];
+selectedProductId: number | null = null;
+selectedProduct: any | null = null;
 
 newProduct: any = {
   name: '',
@@ -121,5 +128,47 @@ nextPage() {
 prevPage() {
   this.currentPage--;
   this.updatePagination();
+}
+
+addStock(productId: number) {
+  const qty = prompt("Enter quantity to ADD:");
+
+  if (qty !== null && qty.trim() !== '' && !isNaN(+qty)) {
+    this.productService.addStock({
+      productId: productId,
+      quantity: +qty,
+      type: 'IN'
+    }).subscribe({
+      next: () => alert("Stock Added"),
+      error: (err) => console.log("ERROR:", err)
+    });
+  } else {
+    alert("Invalid quantity entered.");
+  }
+}
+
+removeStock(productId: number) {
+  const qty = prompt("Enter quantity to REMOVE:");
+
+  if (qty !== null && qty.trim() !== '' && !isNaN(+qty)) {
+    this.productService.addStock({
+      productId: productId,
+      quantity: +qty,
+      type: 'OUT'
+    }).subscribe({
+      next: () => alert("Stock Removed"),
+      error: (err) => console.log("ERROR:", err)
+    });
+  } else {
+    alert("Invalid quantity entered.");
+  }
+}
+viewTransactions(productId: number) {
+  this.selectedProductId = productId;
+  this.selectedProduct = this.products.find(p => p.id === productId) ?? null;
+
+  this.productService.getTransactions(productId).subscribe(data => {
+    this.selectedTransactions = data;
+  });
 }
 }

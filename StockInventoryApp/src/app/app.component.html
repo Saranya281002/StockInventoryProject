@@ -1,1 +1,12 @@
-<router-outlet></router-outlet>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4">
+  <a class="navbar-brand fw-bold">InventoryPro</a>
+
+  <div class="ms-auto">
+    <a routerLink="/dashboard" class="btn btn-outline-light me-2">Dashboard</a>
+    <a routerLink="/products" class="btn btn-outline-light">Products</a>
+  </div>
+</nav>
+
+<div class="container mt-3">
+  <router-outlet></router-outlet>
+</div>
